@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 
 # Create your models here.
 NULLABLE = {'blank': True, 'null': True}
@@ -14,6 +14,11 @@ class Category(models.Model):
 
     def __str__(self):
         return f'{self.name, self.overview}'
+
+    @classmethod
+    def truncate(cls):
+        with connection.cursor() as cursor:
+            cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table} RESTART IDENTITY CASCADE')
 
 
 class Product(models.Model):
@@ -31,3 +36,8 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+
+    @classmethod
+    def truncate(cls):
+        with connection.cursor() as cursor:
+            cursor.execute(f'TRUNCATE TABLE {cls._meta.db_table} RESTART IDENTITY CASCADE')
